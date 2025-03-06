@@ -1,4 +1,4 @@
-let port = process.env.PORT || 10000;
+let port = process.env.PORT || 443;
 
 let IO = require("socket.io")(port, {
   cors: {
