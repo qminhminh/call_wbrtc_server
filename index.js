@@ -1,17 +1,25 @@
-let port = process.env.PORT || 443;
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
-let IO = require("socket.io")(port, {
+const app = express();
+const server = http.createServer(app);
+
+const IO = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
 });
 
+// Middleware để lấy callerId
 IO.use((socket, next) => {
-  if (socket.handshake.query) {
-    let callerId = socket.handshake.query.callerId;
+  let callerId = socket.handshake.query.callerId;
+  if (callerId) {
     socket.user = callerId;
     next();
+  } else {
+    next(new Error("callerId required"));
   }
 });
 
@@ -48,4 +56,10 @@ IO.on("connection", (socket) => {
       iceCandidate: iceCandidate,
     });
   });
+});
+
+// Lắng nghe trên `process.env.PORT` do Render tự cấp cổng
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
