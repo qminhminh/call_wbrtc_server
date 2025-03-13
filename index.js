@@ -23,6 +23,9 @@ IO.on("connection", (socket) => {
     let calleeId = data.calleeId;
     let sdpOffer = data.sdpOffer;
 
+    console.log("Making call to:", calleeId);
+    console.log("makeCall:", sdpOffer);
+
     socket.to(calleeId).emit("newCall", {
       callerId: socket.user,
       sdpOffer: sdpOffer,
@@ -32,6 +35,8 @@ IO.on("connection", (socket) => {
   socket.on("answerCall", (data) => {
     let callerId = data.callerId;
     let sdpAnswer = data.sdpAnswer;
+    console.log("Answering call from:", callerId);
+    console.log("answerCall:", sdpAnswer);
 
     socket.to(callerId).emit("callAnswered", {
       callee: socket.user,
@@ -42,6 +47,8 @@ IO.on("connection", (socket) => {
   socket.on("IceCandidate", (data) => {
     let calleeId = data.calleeId;
     let iceCandidate = data.iceCandidate;
+
+    console.log("IceCandidate:", iceCandidate);
 
     socket.to(calleeId).emit("IceCandidate", {
       sender: socket.user,
